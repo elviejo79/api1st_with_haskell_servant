@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Hello World</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+    <link rel="stylesheet" media="all" href="hyakko.css" />
+  </head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+                <h1 id="hello-world">Hello World</h1>
+        <p>Our Objective is to create an API that when you visit <code>/hello/world</code> it returns a JSON or a Plain text</p>
+        <p>Using <code>stack</code> create the <code>new hello-world</code> project using the <code>simple</code> template.</p>
+        <pre class="shell"><code>$ stack new hello-world simple</code></pre>
+        <p>now go to <code>/hello-world/src/Main.hs</code> and let's start coding</p>
+        
+              </div>
+
+<h2 id="designing-the-api">Designing the API</h2>
+<ul>
+<li>When requested at the endpoint <code>/hello/world</code></li>
+<li>Respond with an encoded JSON</li>
+<li>The function that returns the value must return a String</li>
+</ul>
+<p>The type of the API is the <em>contract</em> As long as the customer makes a request in <code>/hello/world</code> it will get back a Json encoded String</p><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span class="kw">type</span> <span class="dt">HwAPI</span> <span class="fu">=</span> <span class="st">&quot;hello&quot;</span> <span class="fu">:&gt;</span> <span class="st">&quot;world&quot;</span> <span class="fu">:&gt;</span> <span class="dt">Get</span> <span class="ch">&#39;[JSON] String</span>
+</code></pre></div>
+<p>Now define the &quot;function&quot; that will actually respond to the request.</p><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span class="ot">sayHello ::</span> <span class="dt">String</span>
+sayHello <span class="fu">=</span> <span class="st">&quot;Hello World!&quot;</span>
+</code></pre></div>
+<p>Let's now associate the function with the API. the type <code>Server XXXX</code> comes from Servant and it must be specified to the API</p><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span class="ot">hwServer ::</span> <span class="dt">Server</span> <span class="dt">HwAPI</span>
+hwServer <span class="fu">=</span> return sayHello
+</code></pre></div>
+<p>Now we need to add a little bit of boilerplate to guide the type inference</p><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span class="ot">hwProxy ::</span> <span class="dt">Proxy</span> <span class="dt">HwAPI</span>
+hwProxy <span class="fu">=</span> <span class="dt">Proxy</span>
+</code></pre></div>
+<p>With the proxy we create a WAI applicotian. WAI is used by all haskell web servers. Think of hwApp as an executable tha get's connected to the web server. Kind like a cgi perl script</p><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span class="ot">hwApp ::</span> <span class="dt">Application</span>
+hwApp <span class="fu">=</span> serve hwProxy hwServer
+</code></pre></div>
+<p>Now let's associate the App with the webserver</p><div class="sourceCode"><pre class="sourceCode"><code class="sourceCode"><span class="ot">main ::</span> <span class="dt">IO</span>()
+main <span class="fu">=</span> run <span class="dv">8080</span> hwApp
+</code></pre></div>
+<p>finally execute the web server</p>
+<pre class="shell"><code>$ stack build &amp;&amp; stack exec hello-world</code></pre>
+<p>Now in your browser go to: http://localhost:8080/helo/world/</p>
+<p>And see the JSON encoded response.</p>
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>
